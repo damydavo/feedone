@@ -1,25 +1,55 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { v4 as uuidv4 } from 'uuid'
+import Header from "./component/header";
+import FeedbackList from './component/feedbackList';
+import feedbackData from "./data/feedbackData";
+import FeedbackStats from "./component/feedbackStats";
+import FeedbackForm from "./component/feedbackForm";
+import About from './pages/aboutPage';
 
-function App() {
+
+const App = () => {
+  const [feedBack, setFeedBack] = useState(feedbackData)
+
+  const deleteFeedback = (id) => {
+    if (window.confirm('Are you sure you want to delete?')) {
+      setFeedBack(feedBack.filter(item => {
+        return item.id !== id
+      })
+      )
+    }
+
+  }
+
+  const addFeedBack = (newFeedBack) => {
+    newFeedBack.id = uuidv4()
+    setFeedBack([newFeedBack, ...feedBack])
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <Router>
+
+      <Header />
+      <div className="container">
+
+        <Routes>
+          <Route exact path='/' element={
+            <>
+              <FeedbackForm handleAdd={addFeedBack} />
+              <FeedbackStats feedBack={feedBack} />
+              <FeedbackList feedBacks={feedBack} handleDelete={deleteFeedback} />
+            </>
+          }>
+          </Route>
+          <Route path='/about' element={<About />} />
+
+        </Routes>
     </div>
-  );
+    </Router>
+  )
+
+
 }
 
 export default App;
